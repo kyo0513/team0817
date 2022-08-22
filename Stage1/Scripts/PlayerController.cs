@@ -9,6 +9,13 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D rb;
+
+    //敵を踏んだ判定用
+    private CapsuleCollider2D capcol = null;    //カプセルコライダー情報取得用
+    [Header("踏みつけ判定の高さの割合(%)")] public float stepOnRate;  //インスペクターで設定
+    private float otherJumpHeight    = 0.0f;    //敵を踏んだ場合の跳ね返り
+    //敵を踏んだ判定用 -END
+
     [SerializeField] private Animator animator; //アニメーションで追加
 
     [SerializeField] private int moveSpeed;
@@ -18,10 +25,17 @@ public class PlayerController : MonoBehaviour
     private bool isJumping = false;  //ジャンプ中判定用
     private bool isFalling = false;  //落下中判定
 
+    const int DefaultLife  = 3;      //ライフ初期値
+    int life = DefaultLife;          //ライフ変動用
+
+
+    
+
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        capcol = GetComponent<CapsuleCollider2D>();         //カプセルコライダー情報の取得        
     }
 
     // Update is called once per frame
@@ -70,15 +84,75 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
     }
 
-    // 着地判定　他コライダー(stageのタグを持つものと)と接触したらジャンプ可になる
+    void otherJump()
+    {
+        isJumping = false;
+        //isJumping = true;        //ジャンプ判定へ
+        rb.AddForce(Vector2.up * otherJumpHeight, ForceMode2D.Impulse);
+    }
+
+    //着地判定　他コライダー(stageのタグを持つものと)と接触したらジャンプ可になる
+    //足元のIstriggerを使う処理はこちら
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Stage"))
         {
             isJumping = false;
         }
+
+        //**下記の判定へ**
+        //敵接触時ダメージ判定　今はライフを減らすだけ
+        /*
+        if (collision.CompareTag("Enemy"))
+        {
+            Debug.Log("接触");
+            life--;
+
+        } 
+        */       
+        
+    }
+    
+    //体全体の当たり判定を使う処理はこちら
+    void OnCollisionEnter2D(Collision2D other) 
+    {
+        if (other.gameObject.tag == "Enemy")
+        {
+            float stepOnHeight = (capcol.size.y * (stepOnRate / 100f));
+            float judgePos = transform.position.y - (capcol.size.y / 2f) + stepOnHeight;
+
+            foreach (ContactPoint2D p in other.contacts)
+            {
+                if (p.point.y < judgePos)
+                {
+                    Enemy1 o = other.gameObject.GetComponent<Enemy1>();
+                    if (o != null)
+                    {
+                        otherJumpHeight = o.boundHeight;    //踏んづけたものから跳ねる高さを取得する
+                        o.playerStepOn  = true;             //踏んづけたものに対して踏んづけた事を通知する
+
+                        otherJump();
+                    }
+                    else
+                    {
+                        Debug.Log("Enemy1が付いてないよ!");
+                    }
+                }
+                else
+                {
+                    //ダメージ判定　現在はライフが減るだけでノックバックや無敵処理もなし
+                    Debug.Log("接触");
+                    life--;
+                }
+            }
+        }
     }
 
+    //ゲームコントローラーにプレイヤーのライフを返す
+    public int Life()
+    {
+        return life;
+    }
 
 
 }
