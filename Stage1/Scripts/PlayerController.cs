@@ -21,12 +21,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int moveSpeed;
     [SerializeField] private int jumpForce;
 
-    private bool isMoving  = false;  //移動中判定
-    private bool isJumping = false;  //ジャンプ中判定用
-    private bool isFalling = false;  //落下中判定
+    private bool isMoving  = false;     //移動中判定
+    private bool isJumping = false;     //ジャンプ中判定用
+    private bool isFalling = false;     //落下中判定
 
-    const int DefaultLife  = 3;      //ライフ初期値
-    int life = DefaultLife;          //ライフ変動用
+    const int DefaultLife  = 3;         //ライフ初期値
+    int life = DefaultLife;             //ライフ変動用
+
+     //private MoveFloor moveObj = null;  //移動する乗り物に乗ったとき用　8/24
 
 
     
@@ -76,10 +78,26 @@ public class PlayerController : MonoBehaviour
         
     }
 
+    /*   ***8/24 動く床関連　一旦断念
+    void FixedUpdate()                               
+    {
+        //float xSpeed = GetXSpeed();
+        //float ySpeed = GetYSpeed();
+
+        Vector2 addVelocity = Vector2.zero;
+        if (moveObj != null)
+        {
+            Debug.Log("MoveTest");
+            addVelocity = moveObj.GetVelocity();
+            rb.velocity = new Vector2(3, 1) + addVelocity;
+            rb.velocity = new Vector2(xSpeed, ySpeed) + addVelocity;
+        } 
+    }
+    */
+
     void Jump()
     {
         isJumping = true;        //ジャンプ判定へ
-
         //ジャンプ力に力を加える
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
     }
@@ -109,7 +127,18 @@ public class PlayerController : MonoBehaviour
             life--;
 
         } 
-        */       
+        */
+        if (collision.CompareTag("Fall")) //落ちる床に乗った時用 8/24
+        {
+            Enemy1 o = collision.gameObject.GetComponent<Enemy1>();
+            isJumping = false;
+            o.playerStepOn = true;
+        }
+        
+        if(collision.CompareTag("Move"))  //動く床に乗った時用　8/24
+        {            
+            isJumping = false;
+        } 
         
     }
     
@@ -140,13 +169,43 @@ public class PlayerController : MonoBehaviour
                 }
                 else
                 {
-                    //ダメージ判定　現在はライフが減るだけでノックバックや無敵処理もなし
-                    Debug.Log("接触");
-                    life--;
+                    if(other.gameObject.tag == "Enemy"){ 
+                        //ダメージ判定　現在はライフが減るだけでノックバックや無敵処理もなし
+                        Debug.Log("接触");
+                        life--;
+                    }
                 }
             }
         }
+        else
+        {
+            /*  ***動く床関連 8/24一旦断念
+            if (other.gameObject.tag == "Move"){
+                isJumping = false;
+                foreach (ContactPoint2D p in other.contacts){
+                    //動く床に乗っている
+                    float judgePos = transform.position.y - (capcol.size.y / 2f);  //物の高さも必要?
+                    if (p.point.y < judgePos)
+                    {
+                        moveObj = other.gameObject.GetComponent<Movefllor>();
+                    }
+                }
+
+            }
+            */
+
+        }
     }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.collider.tag == "Move")
+        {
+            //動く床から離れた
+            //moveObj = null;
+        }
+    }
+    
 
     //ゲームコントローラーにプレイヤーのライフを返す
     public int Life()
