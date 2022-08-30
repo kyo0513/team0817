@@ -306,6 +306,11 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 6387464227596551701, guid: 84be8860ccd4fee41b46e9be579c9c02, type: 3}
   m_PrefabInstance: {fileID: 7841301138698077740}
   m_PrefabAsset: {fileID: 0}
+--- !u!50 &954652785 stripped
+Rigidbody2D:
+  m_CorrespondingSourceObject: {fileID: 954652780, guid: 84be8860ccd4fee41b46e9be579c9c02, type: 3}
+  m_PrefabInstance: {fileID: 7841301138698077740}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1179984594
 GameObject:
   m_ObjectHideFlags: 0
@@ -8643,6 +8648,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 954652778, guid: 84be8860ccd4fee41b46e9be579c9c02, type: 3}
+      propertyPath: rb
+      value: 
+      objectReference: {fileID: 954652785}
     - target: {fileID: 954652778, guid: 84be8860ccd4fee41b46e9be579c9c02, type: 3}
       propertyPath: animator
       value: 
