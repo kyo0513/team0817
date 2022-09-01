@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
     const int DefaultLife  = 3;         //ライフ初期値
     int life = DefaultLife;             //ライフ変動用
 
-     //private MoveFloor moveObj = null;  //移動する乗り物に乗ったとき用　8/24
+    //private MoveFloor moveObj = null;  //移動する乗り物に乗ったとき用　8/24
 
 
     

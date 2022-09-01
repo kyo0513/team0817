@@ -7,9 +7,9 @@ public class StageCtrl : MonoBehaviour
 {
     [Header("プレイヤーゲームオブジェクト")] public GameObject playerObj;
     [Header("コンティニュー位置")] public GameObject[] continuePoint;
-
+    
     //ゲームオーバー・クリア関連
-    [Header("ゲームオーバー")] public GameObject gameOverObj;
+    [Header("ゲームオーバー")]  public GameObject gameOverObj;
     [Header("フェード")]       public FadeImage fade;
     [Header("ゲームオーバー時に鳴らすSE")] public AudioClip gameOverSE;
     [Header("リトライ時に鳴らすSE")] public AudioClip retrySE;
@@ -35,11 +35,12 @@ public class StageCtrl : MonoBehaviour
     void Start()
     {
         //if (playerObj != null && continuePoint != null && continuePoint.Length > 0)
-        if (playerObj != null && continuePoint != null && continuePoint.Length > 0 && gameOverObj != null && fade != null && stageClearObj != null)
+        //if (playerObj != null && continuePoint != null && continuePoint.Length > 0 && gameOverObj != null && fade != null && stageClearObj != null) //コンテニュー時　戻り削除09/02
+        if (playerObj != null && gameOverObj != null && fade != null && stageClearObj != null)
         {
             gameOverObj.SetActive(false);  //ゲームオーバーは初期はオフ
             stageClearObj.SetActive(false);
-            playerObj.transform.position = continuePoint[0].transform.position;
+            //playerObj.transform.position = continuePoint[0].transform.position; //戻り削除09/02
             p = playerObj.GetComponent<Player>();
             if(p == null)
             {
@@ -65,10 +66,11 @@ public class StageCtrl : MonoBehaviour
         //if(p != null && p.IsContinueWaiting())
         else if (p != null && p.IsContinueWaiting() && !doGameOver)
         {
+            
             if(continuePoint.Length > GameController.instance.continueNum)
             {
-                playerObj.transform.position = 
-                continuePoint[GameController.instance.continueNum].transform.position;
+                //playerObj.transform.position = 
+                //continuePoint[GameController.instance.continueNum].transform.position;  //戻り削除09/02
                 p.ContinuePlayer();
             }
             else
